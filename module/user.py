@@ -92,7 +92,7 @@ class User():
                 continue
             
 
-            if not self.user_role.replace(""," ").isalnum():
+            if not self.user_role.replace(" ","").isalnum():
                 print("Invalid number! please try again..")
                 continue
             else:

@@ -9,7 +9,6 @@ import bcrypt
 from prettytable import PrettyTable
 
 
-
 def main():
     
     login()
@@ -21,24 +20,36 @@ def main():
 def login():
     while True:
 
+
         print("             Welcome to Online Shopping Mart")
+        username = input("Enter Username: ")
+        password = input("Enter paswword: ")
 
-        user_name = 'admin'
-        user_input_name = input("Enter Login Name: ")
-        user_password  = "admin"
+        # create database connection
+        conn = psycopg2.connect("postgresql://postgres:computer@localhost/ecommerce")
 
-        user_input_password = getpass.getpass("Enter Password: ")
+        # create crusor
+        cur = conn.cursor()
 
-        if user_input_name == user_name and user_input_password == user_password:
-            print(" Welcome To Online Shopping Mart")
-            break
-        else:
-            print("Invalid user and password..")
+        # Create a table for user credentials and roles
 
-        print("                        1: Create New User")
+        with conn.cursor() as cur:
+            cur.execute("SELECT user_password,user_role FROM user_schema.user_data WHERE user_name =%s", (username,))    
+            row = cur.fetchone()
+            print(row)
+            row = cur.fetchone()
+            if row:
+                hashed_password = row[0]
+                role = row[1]
+                if bcrypt.checkpw(password.encode('utf-8'), hashed_password):
+                    return role
+        return None
 
-        
-        
+            
+       
+    
+
+           
 def user_data():
 
     conn = psycopg2.connect("postgresql://postgres:computer@localhost/ecommerce")
