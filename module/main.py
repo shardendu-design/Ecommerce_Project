@@ -12,8 +12,8 @@ from prettytable import PrettyTable
 def main():
     
     login()
-    user_data()
-    user_list()
+    # user_data()
+    # user_list()
     # company_list()
     # menu()
 
@@ -23,32 +23,43 @@ def login():
 
         print("             Welcome to Online Shopping Mart")
         username = input("Enter Username: ")
-        password = input("Enter paswword: ")
+        # password = input("Enter paswword: ")
+        password = getpass.getpass("Enter Your Password : ")
 
         # create database connection
         conn = psycopg2.connect("postgresql://postgres:computer@localhost/ecommerce")
 
-        # create crusor
-        cur = conn.cursor()
+        try:
 
-        # Create a table for user credentials and roles
+            # Create a cursor to execute SQL queries
 
-        with conn.cursor() as cur:
-            cur.execute("SELECT user_password,user_role FROM user_schema.user_data WHERE user_name =%s", (username,))    
-            row = cur.fetchone()
-            print(row)
-            row = cur.fetchone()
-            if row:
-                hashed_password = row[0]
-                role = row[1]
-                if bcrypt.checkpw(password.encode('utf-8'), hashed_password):
-                    return role
-        return None
+            with conn.cursor() as cur:
+               
+                cur.execute("SELECT user_password,user_role FROM user_schema.user_data WHERE user_name =%s", (username,))    
+                row = cur.fetchone()
+                
 
-            
-       
-    
+                if row:
+                    hashed_password = row[0]
+                    role = row[1]
+                    # print(hashed_password)
+                    
+                    if bcrypt.checkpw(password.encode('utf-8'), hashed_password.encode('utf-8')):
+                        print("Login successful. User role: ", role)
+                        return role
+                else:
+                    print("Invalid username and password")
+                    continue
+        except (Exception, psycopg2.Error) as error:
+            print("Error while connecting to postgresql", error)
 
+        finally:
+            # Close the database connection
+            if conn:
+                conn.close()
+
+
+                   
            
 def user_data():
 
@@ -66,7 +77,7 @@ def user_data():
     else:
         print("User Doesn't exists")
     
-    conn.set_session(autocommit=True)
+    # conn.set_session(autocommit=True)
     
     # with conn.cursor() as cur:
             

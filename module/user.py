@@ -55,9 +55,9 @@ class User():
             if self.password.isspace():
                 print("Invalid password")
                 continue
-
+            
             hashed_password = bcrypt.hashpw(self.password.encode('utf-8'), bcrypt.gensalt())
-            self.password = hashed_password
+            self.password = hashed_password.decode('utf8')  # decode the hash to prevent is encoded twice
             return self.password
           
 
